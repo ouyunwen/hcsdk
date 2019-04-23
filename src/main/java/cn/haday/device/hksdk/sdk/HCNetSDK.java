@@ -767,7 +767,7 @@ public interface HCNetSDK extends StdCallLibrary {
 
     int NET_DVR_GET_CARD_CFG = 2116; //获取卡参数
     int NET_DVR_SET_CARD_CFG = 2117; //设置卡参数
-
+    int NET_DVR_VEHICLE_DELINFO_CTRL = 3125;   //删除设备内黑名单数据库信息
     int NET_DVR_VEHICLELIST_CTRL_START = 3133; //设置车辆黑白名单信息(批量)
     int ENUM_SENDDATA = 0x0; //发送车辆黑白名单数据
     int MAX_OPERATE_INDEX_LEN = 32;//操作数最大长度
