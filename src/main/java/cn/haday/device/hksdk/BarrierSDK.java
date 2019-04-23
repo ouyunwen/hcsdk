@@ -17,7 +17,7 @@ import static cn.haday.device.hksdk.sdk.HCNetSDK.NET_DVR_VEHICLE_DELINFO_CTRL;
  * thread-safe class
  *
  * @author Owen
- * @createTime 2019年4月19日 15点12分
+ * createTime 2019年4月19日 15点12分
  */
 public class BarrierSDK extends HCSDK {
 
@@ -87,7 +87,7 @@ public class BarrierSDK extends HCSDK {
      * @param deviceName         设备别名
      * @param licensePlateNumber 车牌号码
      */
-    public void deletePass(String deviceName, String licensePlateNumber) throws InstructionExecuteException {
+    public static void deletePass(String deviceName, String licensePlateNumber) throws InstructionExecuteException {
         Integer id = getIdByName(deviceName);
         if (null == id) {
             throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备");

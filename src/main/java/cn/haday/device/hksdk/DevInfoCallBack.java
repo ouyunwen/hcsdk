@@ -8,10 +8,6 @@ import com.sun.jna.Pointer;
  *
  * */
 public class DevInfoCallBack implements HCNetSDK.FRemoteConfigCallback {
-    /**
-     * 流ID信息
-     */
-    private HCNetSDK.NET_DVR_STREAM_INFO strStreamInfo;
 
     /**
      * 回调得到的信息
@@ -33,7 +29,10 @@ public class DevInfoCallBack implements HCNetSDK.FRemoteConfigCallback {
     public void invoke(int dwType, Pointer lpBuffer, int dwBufLen, Pointer pUserData) {
         switch (dwType) {
             case 2:
-                strStreamInfo = new HCNetSDK.NET_DVR_STREAM_INFO();
+                /**
+                 * 流ID信息
+                 */
+                HCNetSDK.NET_DVR_STREAM_INFO strStreamInfo = new HCNetSDK.NET_DVR_STREAM_INFO();
                 strStreamInfo.write();
                 Pointer pInfoV30 = strStreamInfo.getPointer();
                 pInfoV30.write(0, lpBuffer.getByteArray(0, strStreamInfo.size()), 0, strStreamInfo.size());

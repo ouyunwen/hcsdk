@@ -14,19 +14,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  * thread-safe class
  *
  * @author Owen
- * @createTime 2019年4月19日 15点12分
+ * createTime 2019年4月19日 15点12分
  */
 public class HCSDK {
     //已连接设备的数量
-    protected static AtomicInteger connectedCount = new AtomicInteger();
+    private static AtomicInteger connectedCount = new AtomicInteger();
     //已连接设备的名称和id的对应关系
-    protected static ConcurrentHashMap<String, Integer> deviceIdMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, Integer> deviceIdMap = new ConcurrentHashMap<>();
     //已连接设备的名称和info的对应关系
-    protected static ConcurrentHashMap<String, HCNetSDK.NET_DVR_DEVICEINFO_V30> deviceInfoMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, HCNetSDK.NET_DVR_DEVICEINFO_V30> deviceInfoMap = new ConcurrentHashMap<>();
     //锁
-    protected static Object lock = new Object();
+    protected static final Object lock = new Object();
     //sdk是否已经初始化
-    protected static volatile boolean initStatus = false;
+    private static volatile boolean initStatus = false;
     protected static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
     static {
@@ -39,12 +39,10 @@ public class HCSDK {
     /**
      * 初始化SDK，要使用本SDK的其他功能前，要先初始化。<br/>
      * 如果监测到已经初始化过，就不再重复初始化。
-     *
-     * @return 是否初始化成功。
      */
     public static void initSDK() throws InstructionExecuteException {
         synchronized (lock) {
-            if (initStatus == false) {
+            if (!initStatus) {
                 //SDK初始化
                 if (hcNetSDK.NET_DVR_Init()) {
                     initStatus = true;
@@ -113,6 +111,8 @@ public class HCSDK {
             if (!hcNetSDK.NET_DVR_Logout_V30(id)) {
                 throw new InstructionExecuteException("从设备注销时出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
             }
+            deviceIdMap.remove(deviceName);
+            deviceInfoMap.remove(deviceName);
         }
     }
 
