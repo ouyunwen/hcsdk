@@ -126,9 +126,9 @@ public class HCSDK {
     }
 
     /**
-     * 根据设备名称获取其ID
+     * 根据设备别名获取其ID
      *
-     * @return 设备在SDK中的ID
+     * @return 设备在SDK中的ID，如果该别名还没注册，则返回null
      */
     protected static Integer getIdByName(String name) {
         return deviceIdMap.get(name);
