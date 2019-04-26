@@ -73,7 +73,7 @@ public class BarrierSDK extends HCSDK {
         synchronized (lock) {
             boolean bSend = hcNetSDK.NET_DVR_SendRemoteConfig(lHandle, hcNetSDK.ENUM_SENDDATA, struVehicleControl.getPointer(), struVehicleControl.size());
             if (!bSend) {
-                throw new InstructionExecuteException("调用NET_DVR_SendRemoteConfig下发车牌时异常，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+                throw new InstructionExecuteException("调用NET_DVR_SendRemoteConfig下发车牌时异常，错误码：" + hcNetSDK.NET_DVR_GetLastError(),500);
             }
         }
         //关闭连接，释放资源
@@ -90,7 +90,7 @@ public class BarrierSDK extends HCSDK {
     public static void deletePass(String deviceName, String licensePlateNumber) throws InstructionExecuteException {
         Integer id = getIdByName(deviceName);
         if (null == id) {
-            throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备");
+            throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备",404);
         }
         HCNetSDK.NET_DVR_VEHICLE_CONTROL_DELINFO net_dvr_vehicle_control_delinfo = new HCNetSDK.NET_DVR_VEHICLE_CONTROL_DELINFO();
         net_dvr_vehicle_control_delinfo.read();
@@ -107,7 +107,7 @@ public class BarrierSDK extends HCSDK {
         synchronized (lock) {
             boolean b = hcNetSDK.NET_DVR_RemoteControl(id, NET_DVR_VEHICLE_DELINFO_CTRL, net_dvr_vehicle_control_delinfo.getPointer(), net_dvr_vehicle_control_delinfo.size());
             if (!b) {
-                throw new InstructionExecuteException("调用NET_DVR_RemoteControl删除车牌时异常，错误码：" + hcNetSDK.NET_DVR_GetLastError());
+                throw new InstructionExecuteException("调用NET_DVR_RemoteControl删除车牌时异常，错误码：" + hcNetSDK.NET_DVR_GetLastError(),500);
             }
         }
 

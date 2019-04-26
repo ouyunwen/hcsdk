@@ -47,7 +47,7 @@ public class HCSDK {
                 if (hcNetSDK.NET_DVR_Init()) {
                     initStatus = true;
                 } else {
-                    throw new InstructionExecuteException("初始化SDK出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
+                    throw new InstructionExecuteException("初始化SDK出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(),500);
                 }
             }
         }
@@ -64,7 +64,7 @@ public class HCSDK {
                 if (hcNetSDK.NET_DVR_Cleanup()) {
                     initStatus = false;
                 } else {
-                    throw new InstructionExecuteException("资源释放出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
+                    throw new InstructionExecuteException("资源释放出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(),500);
                 }
             }
         }
@@ -84,12 +84,12 @@ public class HCSDK {
     public static void login(String ip, int port, String userName, String password, String deviceName) throws InstructionExecuteException {
         synchronized (lock) {
             if (deviceIdMap.containsKey(deviceName)) {
-                throw new InstructionExecuteException(deviceName + " 已经登录过.");
+                throw new InstructionExecuteException(deviceName + " 已经登录过.",304);
             }
             HCNetSDK.NET_DVR_DEVICEINFO_V30 net_dvr_deviceinfo_v30 = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
             int id = hcNetSDK.NET_DVR_Login_V30(ip, (short) port, userName, password, net_dvr_deviceinfo_v30);
             if (id < 0) {
-                throw new InstructionExecuteException("登录设备出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
+                throw new InstructionExecuteException("登录设备出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(),500);
             } else {
                 deviceIdMap.put(deviceName, id);
                 deviceInfoMap.put(deviceName, net_dvr_deviceinfo_v30);
@@ -105,11 +105,11 @@ public class HCSDK {
     public static void logout(String deviceName) throws InstructionExecuteException {
         Integer id = getIdByName(deviceName);
         if (null == id) {
-            throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备");
+            throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备",404);
         }
         synchronized (lock) {
             if (!hcNetSDK.NET_DVR_Logout_V30(id)) {
-                throw new InstructionExecuteException("从设备注销时出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
+                throw new InstructionExecuteException("从设备注销时出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(),500);
             }
             deviceIdMap.remove(deviceName);
             deviceInfoMap.remove(deviceName);
@@ -144,14 +144,14 @@ public class HCSDK {
         //根据名称获取存留在sdk的设备id
         Integer id = getIdByName(deviceName);
         if (null == id) {
-            throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备");
+            throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备",404);
         }
         DevInfoCallBack fVehicleCrtlCB = new DevInfoCallBack();
         //发起远程连接
         synchronized (lock) {
             int i = hcNetSDK.NET_DVR_StartRemoteConfig(id, HCNetSDK.NET_DVR_VEHICLELIST_CTRL_START, null, 0, fVehicleCrtlCB, Pointer.NULL);
             if (i < 0) {
-                throw new InstructionExecuteException("打开连接出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
+                throw new InstructionExecuteException("打开连接出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(),500);
             }
             return i;
         }
@@ -165,7 +165,7 @@ public class HCSDK {
     protected static void closeConnection(int connectionId) throws InstructionExecuteException {
         synchronized (lock) {
             if (!hcNetSDK.NET_DVR_StopRemoteConfig(connectionId)) {
-                throw new InstructionExecuteException("关闭连接出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError());
+                throw new InstructionExecuteException("关闭连接出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(),500);
             }
         }
     }
