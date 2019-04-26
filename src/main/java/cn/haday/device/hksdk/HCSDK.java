@@ -84,7 +84,7 @@ public class HCSDK {
     public static void login(String ip, int port, String userName, String password, String deviceName) throws InstructionExecuteException {
         synchronized (lock) {
             if (deviceIdMap.containsKey(deviceName)) {
-                throw new DuplicateDeviceNameException(deviceName + " 已经登录过.");
+                throw new InstructionExecuteException(deviceName + " 已经登录过.");
             }
             HCNetSDK.NET_DVR_DEVICEINFO_V30 net_dvr_deviceinfo_v30 = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
             int id = hcNetSDK.NET_DVR_Login_V30(ip, (short) port, userName, password, net_dvr_deviceinfo_v30);
