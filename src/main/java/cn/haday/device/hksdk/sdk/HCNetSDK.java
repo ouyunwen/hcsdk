@@ -548,6 +548,7 @@ public interface HCNetSDK extends StdCallLibrary {
     int COMM_ID_INFO_ALARM = 0x5200; //门禁身份证刷卡信息
     int COMM_VCA_ALARM = 0x4993; //智能检测通用报警
     int COMM_ISAPI_ALARM = 0x6009;//ISAPI协议报警信息
+    int COMM_VEHICLE_CONTROL_ALARM = 0x3059;//黑白名单车辆报警上传
     int COMM_ALARM_TPS_STATISTICS = 0x3082; //TPS统计过车数据上传
     /*************操作异常类型(消息方式, 回调方式(保留))****************/
     int EXCEPTION_EXCHANGE = 0x8000;//用户交互时异常

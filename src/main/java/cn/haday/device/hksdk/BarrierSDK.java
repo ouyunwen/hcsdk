@@ -34,6 +34,7 @@ public class BarrierSDK extends HCSDK {
      */
     public static void addPass(String deviceName, String licensePlateNumber, LocalDateTime startTime, LocalDateTime endTime) throws InstructionExecuteException {
         int lHandle = openConnection(deviceName);
+        System.out.println("--------lHandle:"+lHandle);
         HCNetSDK.NET_DVR_VEHICLE_CONTROL_LIST_INFO struVehicleControl = new HCNetSDK.NET_DVR_VEHICLE_CONTROL_LIST_INFO();
         struVehicleControl.read();
         struVehicleControl.dwSize = struVehicleControl.size();
@@ -89,6 +90,7 @@ public class BarrierSDK extends HCSDK {
      */
     public static void deletePass(String deviceName, String licensePlateNumber) throws InstructionExecuteException {
         Integer id = getIdByName(deviceName);
+        System.out.println("--------lHandle:"+id);
         if (null == id) {
             throw new InstructionExecuteException("找不到名称为：" + deviceName + "的设备",2);
         }
@@ -104,6 +106,7 @@ public class BarrierSDK extends HCSDK {
         //条件删除，这里就是根据车牌号删除
         net_dvr_vehicle_control_delinfo.byOperateType = 0;
         net_dvr_vehicle_control_delinfo.byListType = 0;
+        net_dvr_vehicle_control_delinfo.write();
         synchronized (lock) {
             boolean b = hcNetSDK.NET_DVR_RemoteControl(id, NET_DVR_VEHICLE_DELINFO_CTRL, net_dvr_vehicle_control_delinfo.getPointer(), net_dvr_vehicle_control_delinfo.size());
             if (!b) {
