@@ -6,6 +6,8 @@ import com.sun.jna.Pointer;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +24,8 @@ public class HCSDK {
     private static AtomicInteger connectedCount = new AtomicInteger();
     //已连接设备的名称和id的对应关系
     private static ConcurrentHashMap<String, Integer> deviceIdMap = new ConcurrentHashMap<>();
+    //存放已经布防的设备别名
+    private static ConcurrentHashMap<String, Integer> alarmedDevice = new ConcurrentHashMap<>();
     //已连接设备的名称和info的对应关系
     private static ConcurrentHashMap<String, HCNetSDK.NET_DVR_DEVICEINFO_V30> deviceInfoMap = new ConcurrentHashMap<>();
     //锁
@@ -33,7 +37,7 @@ public class HCSDK {
     protected static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
     //监听回调函数
-    private static AlramCallBack alramCallBack;
+    private static volatile AlramCallBack alramCallBack;
 
     //监听端口
     private static final int port = 8000;
@@ -100,7 +104,6 @@ public class HCSDK {
             HCNetSDK.NET_DVR_DEVICEINFO_V30 net_dvr_deviceinfo_v30 = new HCNetSDK.NET_DVR_DEVICEINFO_V30();
             System.out.println(ip + "," + (short) port + "," + userName + "," + password);
             int id = hcNetSDK.NET_DVR_Login_V30(ip, (short) port, userName, password, net_dvr_deviceinfo_v30);
-            System.out.println("--------id:" + id);
             if (id < 0) {
                 throw new InstructionExecuteException("登录设备出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
             } else {
@@ -145,6 +148,24 @@ public class HCSDK {
      */
     protected static Integer getIdByName(String name) {
         return deviceIdMap.get(name);
+    }
+
+    protected static String getNameByid(Integer id){
+        for (Map.Entry<String, Integer> entry : deviceIdMap.entrySet()) {
+            if (entry.getValue().equals(id)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    protected static String getNameBySSerialNumber(byte[] sSerialNumber) {
+        for (Map.Entry<String, HCNetSDK.NET_DVR_DEVICEINFO_V30> entry : deviceInfoMap.entrySet()) {
+            if (Arrays.equals(entry.getValue().sSerialNumber, sSerialNumber)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
     /**
@@ -195,10 +216,10 @@ public class HCSDK {
         try {
             lListenHandle = hcNetSDK.NET_DVR_StartListen_V30(InetAddress.getLocalHost().getHostAddress(), (short) port, alramCallBack, pUser);
         } catch (UnknownHostException e) {
-            throw new InstructionExecuteException("开启监听出现异常，获取本地IP出现异常：" + e.getMessage(), 1);
+            throw new InstructionExecuteException("开启监听失败，获取本地IP出现异常：" + e.getMessage(), 1);
         }
         if (lListenHandle < 0) {
-            throw new InstructionExecuteException("开启监听出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
+            throw new InstructionExecuteException("开启监听失败，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
         }
     }
 
@@ -210,7 +231,99 @@ public class HCSDK {
             return;
         }
         if (!hcNetSDK.NET_DVR_StopListen_V30(lListenHandle)) {
-            throw new InstructionExecuteException("停止监听出现异常，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
+            throw new InstructionExecuteException("停止监听失败，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
+        }
+    }
+
+    /**
+     * 开启布防
+     */
+    public static void setupAlarmChan(String deviceName) throws InstructionExecuteException {
+        if (deviceName == null) {
+            throw new InstructionExecuteException("开启布防失败，设备别名不能为空", 1);
+        }
+        if (alramCallBack == null) {
+            throw new InstructionExecuteException("布防失败，布防全局回调函数没有设置", 1);
+        }
+        //尚未布防,需要布防
+        synchronized (lock) {
+            if (!alarmedDevice.containsKey(deviceName)) {
+                HCNetSDK.NET_DVR_SETUPALARM_PARAM m_strAlarmInfo = new HCNetSDK.NET_DVR_SETUPALARM_PARAM();
+                m_strAlarmInfo.dwSize = m_strAlarmInfo.size();
+                m_strAlarmInfo.byLevel = 1;
+                m_strAlarmInfo.byAlarmInfoType = 0;
+                //m_strAlarmInfo.bySupport = 3;
+                //m_strAlarmInfo.byBrokenNetHttp=1;
+                m_strAlarmInfo.write();
+
+                int lAlarmHandle = hcNetSDK.NET_DVR_SetupAlarmChan_V41(getIdByName(deviceName), m_strAlarmInfo);
+                if (lAlarmHandle == -1) {
+                    throw new InstructionExecuteException("布防失败，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
+                } else {
+                    alarmedDevice.put(deviceName, lAlarmHandle);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 关闭布防
+     */
+    public static void closeAlarmChan(String deviceName) throws InstructionExecuteException {
+        if (deviceName == null) {
+            throw new InstructionExecuteException("开启布防失败，设备别名不能为空", 1);
+        }
+        //报警撤防
+        synchronized (lock) {
+            if (alarmedDevice.containsKey(deviceName)) {
+                if (!hcNetSDK.NET_DVR_CloseAlarmChan_V30(alarmedDevice.get(deviceName))) {
+                    throw new InstructionExecuteException("取消布防失败，异常代号：" + hcNetSDK.NET_DVR_GetLastError() + "，设备别名：" + deviceName, 1);
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 为SDK设置全局回调函数，用于布防使用，如果后面开启了监听，这个回调函数按文档的说法应该是不会再有效。
+     */
+    public static boolean setAlramCallBack(AlarmCallbackHandler alarmCallbackHandler) throws InstructionExecuteException {
+        synchronized (lock) {
+            if (alramCallBack == null) {
+                alramCallBack = new AlramCallBack(alarmCallbackHandler);
+                Pointer pUser = null;
+                if (!hcNetSDK.NET_DVR_SetDVRMessageCallBack_V30(alramCallBack, pUser)) {
+                    throw new InstructionExecuteException("布防时设置回调函数失败，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 取消全部布防
+     */
+    public static void closeAlarmChanAll() throws InstructionExecuteException {
+        for (Map.Entry<String, Integer> entry : alarmedDevice.entrySet()) {
+            String deviceName = entry.getKey();
+            closeAlarmChan(deviceName);
+            alarmedDevice.remove(deviceName);
+        }
+    }
+
+    /**
+     * 注销所有设备
+     */
+    public static void logoutAll() throws InstructionExecuteException {
+        for (Map.Entry<String, Integer> entry : deviceIdMap.entrySet()) {
+            String deviceName = entry.getKey();
+            logout(deviceName);
+            deviceIdMap.remove(deviceName);
+            deviceInfoMap.remove(deviceName);
+
         }
     }
 }

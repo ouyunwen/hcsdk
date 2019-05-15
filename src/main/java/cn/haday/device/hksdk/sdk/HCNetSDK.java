@@ -122,6 +122,7 @@ public interface HCNetSDK extends StdCallLibrary {
     int MAX_ALARMIN_V30 = (MAX_ANALOG_ALARMIN + MAX_IP_ALARMIN);//160
 
     int MAX_LICENSE_LEN = 16;
+    int MAX_CARDNO_LEN = 48;
     int VCA_MAX_POLYGON_POINT_NUM = 10;
 
     int MAX_ID_NUM_LEN = 32;  //最大身份证号长度
@@ -4340,7 +4341,7 @@ DVR实现巡航数据结构
 
     boolean NET_DVR_STDXMLConfig(int lUserID, NET_DVR_XML_CONFIG_INPUT lpInputParam, NET_DVR_XML_CONFIG_OUTPUT lpOutputParam);
 
-    boolean  NET_DVR_RemoteControl(int lUserID, int dwCommand, Pointer lpInBuffer, int dwInBufferSize);
+    boolean NET_DVR_RemoteControl(int lUserID, int dwCommand, Pointer lpInBuffer, int dwInBufferSize);
 
     //gps相关结构定义
     class TimeSegParam extends Structure {
@@ -4430,11 +4431,11 @@ DVR实现巡航数据结构
         public byte[] byRes = new byte[32];
     }
 
-    class NET_DVR_VEHICLE_CONTROL_LIST_INFO extends Structure{
+    class NET_DVR_VEHICLE_CONTROL_LIST_INFO extends Structure {
         public int dwSize;
         public int dwChannel;
         public int dwDataIndex;
-        public byte[] sLicense=new byte[16];
+        public byte[] sLicense = new byte[16];
         public byte byListType;
         public byte byPlateType;
         public byte byPlateColor;
@@ -4442,8 +4443,8 @@ DVR实现巡航数据结构
         public byte[] sCardNo = new byte[48];
         public NET_DVR_TIME_V30 struStartTime = new NET_DVR_TIME_V30();
         public NET_DVR_TIME_V30 struStopTime = new NET_DVR_TIME_V30();
-        public byte[] sOperateIndex=new byte[32];
-        public byte[] byRes1= new byte[224];
+        public byte[] sOperateIndex = new byte[32];
+        public byte[] byRes1 = new byte[224];
 
         @Override
         protected List getFieldOrder() {
@@ -4478,6 +4479,23 @@ DVR实现巡航数据结构
         //操作数（平台同步表流水号不会重复，用于增量更新，代表同步到同步表的某一条记录了，存在相机内存，重启后会清0）
         public byte[] sOperateIndex = new byte[MAX_OPERATE_INDEX_LEN];
         public byte[] byRes = new byte[24];
+    }
+
+    class NET_DVR_VEHICLE_CONTROL_ALARM extends Structure {
+        public int dwSize;//结构体大小
+        public byte byListType;//名单属性（黑白名单）：0- 白名单，1- 黑名单，2- 临时名单
+        public byte byPlateType;//车牌类型
+        public byte byPlateColor;//车牌颜色
+        public byte byRes1;//保留，置为0
+        public byte[] sLicense = new byte[MAX_LICENSE_LEN];//车牌号码
+        public byte[] sCardNo = new byte[MAX_CARDNO_LEN];//卡号
+        public NET_DVR_TIME_V30 struAlarmTime = new NET_DVR_TIME_V30();//报警时间
+        public int dwChannel;//设备通道号（如果直连的是IPC，则为IPC通道号；如果连的DVR\NVR，则为DVR\NVR的通道号）
+        public int dwPicDataLen;//图片数据大小，0表示无图片，不为0是表示后面带图片数据
+        public byte byPicType;//图片类型：0- JPEG，1- BMP，2- PNG
+        public byte[] byRes3 = new byte[3];//保留，置为0
+        public String pPicData;//图片数据缓冲区，JPEG图片
+        public byte[] byRes2 = new byte[48];//保留，置为0
     }
 }
 

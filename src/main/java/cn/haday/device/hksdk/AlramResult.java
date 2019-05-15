@@ -7,7 +7,9 @@ public class AlramResult {
     private String msg;
     private String licensePlateNumber;
     private Date date;
+    @Deprecated
     private int deviceId;
+    private String deviceName;
 
     public AlramResult(AlramType alramType, String msg) {
         this.alramType = alramType;
@@ -27,6 +29,14 @@ public class AlramResult {
         this.msg = msg;
         this.licensePlateNumber = licensePlateNumber;
         this.deviceId = deviceId;
+        this.date = new Date();
+    }
+
+    public AlramResult(AlramType alramType, String msg, String licensePlateNumber, String deviceName) {
+        this.alramType = alramType;
+        this.msg = msg;
+        this.licensePlateNumber = licensePlateNumber;
+        this.deviceName = deviceName;
         this.date = new Date();
     }
 
@@ -68,5 +78,13 @@ public class AlramResult {
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 }
