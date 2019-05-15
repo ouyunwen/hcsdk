@@ -15,10 +15,7 @@
 
 package cn.haday.device.hksdk.sdk;
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
+import com.sun.jna.*;
 import com.sun.jna.examples.win32.GDI32.RECT;
 import com.sun.jna.examples.win32.W32API;
 import com.sun.jna.examples.win32.W32API.HWND;
@@ -32,9 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 
 //SDK接口说明,HCNetSDK.dll
-public interface HCNetSDK extends StdCallLibrary {
+public interface HCNetSDK extends Library {
 
-    HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary("HCNetSDK",
+    HCNetSDK INSTANCE = (HCNetSDK) Native.loadLibrary("hcnetsdk",
             HCNetSDK.class);
     /***宏定义***/
     //常量
@@ -3711,92 +3708,92 @@ DVR实现巡航数据结构
     }
 
     /***API函数声明,详细说明见API手册***/
-    interface FRealDataCallBack_V30 extends StdCallCallback {
+    interface FRealDataCallBack_V30 extends Callback {
         void invoke(int lRealHandle, int dwDataType,
                     ByteByReference pBuffer, int dwBufSize, Pointer pUser);
     }
 
-    interface FMSGCallBack extends StdCallCallback {
+    interface FMSGCallBack extends Callback {
         void invoke(int lCommand, NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, int dwBufLen, Pointer pUser);
     }
 
-    interface FMSGCallBack_V31 extends StdCallCallback {
+    interface FMSGCallBack_V31 extends Callback {
         boolean invoke(int lCommand, NET_DVR_ALARMER pAlarmer, Pointer pAlarmInfo, int dwBufLen, Pointer pUser);
     }
 
-    interface FMessCallBack extends StdCallCallback {
+    interface FMessCallBack extends Callback {
         boolean invoke(int lCommand, String sDVRIP, String pBuf, int dwBufLen);
     }
 
-    interface FMessCallBack_EX extends StdCallCallback {
+    interface FMessCallBack_EX extends Callback {
         boolean invoke(int lCommand, int lUserID, String pBuf, int dwBufLen);
     }
 
-    interface FMessCallBack_NEW extends StdCallCallback {
+    interface FMessCallBack_NEW extends Callback {
         boolean invoke(int lCommand, String sDVRIP, String pBuf, int dwBufLen, short dwLinkDVRPort);
     }
 
-    interface FMessageCallBack extends StdCallCallback {
+    interface FMessageCallBack extends Callback {
         boolean invoke(int lCommand, String sDVRIP, String pBuf, int dwBufLen, int dwUser);
     }
 
-    interface FExceptionCallBack extends StdCallCallback {
+    interface FExceptionCallBack extends Callback {
         void invoke(int dwType, int lUserID, int lHandle, Pointer pUser);
     }
 
-    interface FDrawFun extends StdCallCallback {
+    interface FDrawFun extends Callback {
         void invoke(int lRealHandle, W32API.HDC hDc, int dwUser);
     }
 
-    interface FStdDataCallBack extends StdCallCallback {
+    interface FStdDataCallBack extends Callback {
         void invoke(int lRealHandle, int dwDataType, ByteByReference pBuffer, int dwBufSize, int dwUser);
     }
 
-    interface FPlayDataCallBack extends StdCallCallback {
+    interface FPlayDataCallBack extends Callback {
         void invoke(int lPlayHandle, int dwDataType, ByteByReference pBuffer, int dwBufSize, int dwUser);
     }
 
-    interface FVoiceDataCallBack extends StdCallCallback {
+    interface FVoiceDataCallBack extends Callback {
         void invoke(int lVoiceComHandle, String pRecvDataBuffer, int dwBufSize, byte byAudioFlag, int dwUser);
     }
 
-    interface FVoiceDataCallBack_V30 extends StdCallCallback {
+    interface FVoiceDataCallBack_V30 extends Callback {
         void invoke(int lVoiceComHandle, String pRecvDataBuffer, int dwBufSize, byte byAudioFlag, Pointer pUser);
     }
 
-    interface FVoiceDataCallBack_MR extends StdCallCallback {
+    interface FVoiceDataCallBack_MR extends Callback {
         void invoke(int lVoiceComHandle, String pRecvDataBuffer, int dwBufSize, byte byAudioFlag, int dwUser);
     }
 
-    interface FVoiceDataCallBack_MR_V30 extends StdCallCallback {
+    interface FVoiceDataCallBack_MR_V30 extends Callback {
         void invoke(int lVoiceComHandle, String pRecvDataBuffer, int dwBufSize, byte byAudioFlag, String pUser);
     }
 
-    interface FVoiceDataCallBack2 extends StdCallCallback {
+    interface FVoiceDataCallBack2 extends Callback {
         void invoke(String pRecvDataBuffer, int dwBufSize, Pointer pUser);
     }
 
-    interface FSerialDataCallBack extends StdCallCallback {
+    interface FSerialDataCallBack extends Callback {
         void invoke(int lSerialHandle, String pRecvDataBuffer, int dwBufSize, int dwUser);
     }
 
-    interface FRowDataCallBack extends StdCallCallback {
+    interface FRowDataCallBack extends Callback {
         void invoke(int lUserID, String sIPAddr, int lRowAmout, String pRecvDataBuffer, int dwBufSize, int dwUser);
     }
 
-    interface FColLocalDataCallBack extends StdCallCallback {
+    interface FColLocalDataCallBack extends Callback {
         void invoke(int lUserID, String sIPAddr, int lColumnAmout, String pRecvDataBuffer, int dwBufSize, int dwUser);
     }
 
-    interface FColGlobalDataCallBack extends StdCallCallback {
+    interface FColGlobalDataCallBack extends Callback {
         void invoke(int lUserID, String sIPAddr, int lColumnAmout, String pRecvDataBuffer, int dwBufSize, int dwUser);
     }
 
-    interface FJpegdataCallBack extends StdCallCallback {
+    interface FJpegdataCallBack extends Callback {
         int invoke(int lCommand, int lUserID, String sDVRIP, String sJpegName, String pJpegBuf, int dwBufLen, int dwUser);
     }
 
-    interface FPostMessageCallBack extends StdCallCallback {
+    interface FPostMessageCallBack extends Callback {
         int invoke(int dwType, int lIndex);
     }
 
@@ -4327,7 +4324,7 @@ DVR实现巡航数据结构
 
     boolean NET_DVR_ContinuousShoot(int lUserID, NET_DVR_SNAPCFG lpInter);
 
-    interface FRemoteConfigCallback extends StdCallCallback {
+    interface FRemoteConfigCallback extends Callback {
         void invoke(int dwType, Pointer lpBuffer, int dwBufLen, Pointer pUserData);
     }
 
@@ -4418,7 +4415,7 @@ DVR实现巡航数据结构
         public byte[] byRes = new byte[12];
     }
 
-    interface fGPSDataCallback extends StdCallCallback {
+    interface fGPSDataCallback extends Callback {
         void invoke(int nHandle, int dwState, Pointer lpBuffer, int dwBufLen, Pointer pUser);
     }
 
@@ -4501,7 +4498,7 @@ DVR实现巡航数据结构
 
 
 //播放库函数声明,PlayCtrl.dll
-interface PlayCtrl extends StdCallLibrary {
+interface PlayCtrl extends Library {
     PlayCtrl INSTANCE = (PlayCtrl) Native.loadLibrary("PlayCtrl",
             PlayCtrl.class);
 
