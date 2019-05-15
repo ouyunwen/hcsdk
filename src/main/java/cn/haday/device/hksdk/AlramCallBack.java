@@ -199,9 +199,6 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                 } catch (UnsupportedEncodingException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
                 if (strPlateResult.dwPicLen > 0) {
                     //保存图片
@@ -272,22 +269,23 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                 Pointer whiteCarResultPointer = whiteCarResult.getPointer();
                 whiteCarResultPointer.write(0, pAlarmInfo.getByteArray(0, whiteCarResult.size()), 0, whiteCarResult.size());
                 whiteCarResult.read();
-                try {
-                    for(int i = 0;i<whiteCarResult.sLicense.length;i++){
-                        if(whiteCarResult.sLicense[i]==0){
-                            String srt3 = new String(whiteCarResult.sLicense,0,i, "GBK");
-                            msg = msg + "：交通抓拍上传，车牌：" + srt3;
-                            alarmCallbackHandler.handle(new AlramResult(AlramType.CAR_PASS, msg, srt3,HCSDK.getNameBySSerialNumber(pAlarmer.sSerialNumber)));
-                            break;
+
+                if(whiteCarResult.byListType == 0){
+                    try {
+                        for(int i = 0;i<whiteCarResult.sLicense.length;i++){
+                            if(whiteCarResult.sLicense[i]==0){
+                                String plateNumber = new String(whiteCarResult.sLicense,0,i, "GBK");
+                                msg = msg + "：检测到白名单车辆，车牌：" + plateNumber;
+                                alarmCallbackHandler.handle(new AlramResult(AlramType.CAR_PASS, msg, plateNumber,HCSDK.getNameByid(pAlarmer.lUserID)));
+                                break;
+                            }
                         }
+                    } catch (UnsupportedEncodingException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
                     }
-                } catch (UnsupportedEncodingException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
+
                 break;
             default:
                 //其他报警
