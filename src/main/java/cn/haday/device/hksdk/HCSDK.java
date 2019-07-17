@@ -44,11 +44,11 @@ public class HCSDK {
     //监听开启后得到的句柄
     private static int lListenHandle;
 
-    static {
+    /*static {
         //设置连接时间和重连时间
         hcNetSDK.NET_DVR_SetConnectTime(2000, 3);
         hcNetSDK.NET_DVR_SetReconnect(5000, true);
-    }
+    }*/
 
 
     /**
@@ -71,11 +71,11 @@ public class HCSDK {
     /**
      * 结束应用前调用此方法进行资源释放
      *
-     * @return 是否释放成功
+     *
      */
     public static void cleanUp() throws InstructionExecuteException {
         synchronized (lock) {
-            if (initStatus == true) {
+            if (initStatus) {
                 if (hcNetSDK.NET_DVR_Cleanup()) {
                     initStatus = false;
                 } else {
@@ -94,7 +94,7 @@ public class HCSDK {
      * @param userName   设备连接时的用户
      * @param password   设备连接时的密码
      * @param deviceName 给设备一个别名，便于以后根据代号来进行控制
-     * @return 是否连接成功
+     *
      */
     public static void login(String ip, int port, String userName, String password, String deviceName) throws InstructionExecuteException {
         synchronized (lock) {

@@ -181,6 +181,7 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                     //保存图片
                 }
                 break;
+                //以下是抓拍到车牌时触发的逻辑
             case HCNetSDK.COMM_UPLOAD_PLATE_RESULT:
                 HCNetSDK.NET_DVR_PLATE_RESULT strPlateResult = new HCNetSDK.NET_DVR_PLATE_RESULT();
                 strPlateResult.write();
