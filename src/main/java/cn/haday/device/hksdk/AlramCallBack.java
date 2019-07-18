@@ -181,7 +181,7 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                     //保存图片
                 }
                 break;
-                //以下是抓拍到车牌时触发的逻辑
+            //以下是抓拍到车牌时触发的逻辑
             case HCNetSDK.COMM_UPLOAD_PLATE_RESULT:
                 HCNetSDK.NET_DVR_PLATE_RESULT strPlateResult = new HCNetSDK.NET_DVR_PLATE_RESULT();
                 strPlateResult.write();
@@ -189,11 +189,11 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                 pPlateInfo.write(0, pAlarmInfo.getByteArray(0, strPlateResult.size()), 0, strPlateResult.size());
                 strPlateResult.read();
                 try {
-                    for(int i = 0;i<strPlateResult.struPlateInfo.sLicense.length;i++){
-                        if(strPlateResult.struPlateInfo.sLicense[i]==0){
-                            String plateNumber = new String(strPlateResult.struPlateInfo.sLicense,0,i, "GBK").replaceAll("[红|黄|蓝|黑|紫|绿]","");
+                    for (int i = 0; i < strPlateResult.struPlateInfo.sLicense.length; i++) {
+                        if (strPlateResult.struPlateInfo.sLicense[i] == 0) {
+                            String plateNumber = new String(strPlateResult.struPlateInfo.sLicense, 0, i, "GBK").replaceAll("[红|黄|蓝|黑|紫|绿]", "");
                             msg = msg + "：交通抓拍上传，车牌：" + plateNumber;
-                            alarmCallbackHandler.handle(new AlramResult(AlramType.CAR_PASS, msg, plateNumber,HCSDK.getNameByid(pAlarmer.lUserID)));
+                            alarmCallbackHandler.handle(new AlramResult(AlramType.ANY_CAR, msg, plateNumber, HCSDK.getNameByid(pAlarmer.lUserID)));
                             break;
                         }
                     }
@@ -214,7 +214,7 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                 try {
                     String srt3 = new String(strItsPlateResult.struPlateInfo.sLicense, "GBK");
                     msg = msg + ",车辆类型：" + strItsPlateResult.byVehicleType + ",交通抓拍上传，车牌：" + srt3;
-                    alarmCallbackHandler.handle(new AlramResult(AlramType.CAR_PASS, msg, srt3));
+                    alarmCallbackHandler.handle(new AlramResult(AlramType.NEW_ANY_CAT, msg, srt3, HCSDK.getNameByid(pAlarmer.lUserID)));
                 } catch (UnsupportedEncodingException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -271,26 +271,33 @@ public class AlramCallBack implements HCNetSDK.FMSGCallBack {
                 whiteCarResultPointer.write(0, pAlarmInfo.getByteArray(0, whiteCarResult.size()), 0, whiteCarResult.size());
                 whiteCarResult.read();
 
-                if(whiteCarResult.byListType == 0){
-                    try {
-                        for(int i = 0;i<whiteCarResult.sLicense.length;i++){
-                            if(whiteCarResult.sLicense[i]==0){
-                                String plateNumber = new String(whiteCarResult.sLicense,0,i, "GBK");
+                try {
+                    for (int i = 0; i < whiteCarResult.sLicense.length; i++) {
+                        if (whiteCarResult.sLicense[i] == 0) {
+                            String plateNumber = new String(whiteCarResult.sLicense, 0, i, "GBK");
+                            if(whiteCarResult.byListType == 0){
                                 msg = msg + "：检测到白名单车辆，车牌：" + plateNumber;
-                                alarmCallbackHandler.handle(new AlramResult(AlramType.CAR_PASS, msg, plateNumber,HCSDK.getNameByid(pAlarmer.lUserID)));
-                                break;
+                                alarmCallbackHandler.handle(new AlramResult(AlramType.WHITE_LIST, msg, plateNumber, HCSDK.getNameByid(pAlarmer.lUserID)));
+                            }else if(whiteCarResult.byListType == 1){
+                                msg = msg + "：检测到黑名单车辆，车牌：" + plateNumber;
+                                alarmCallbackHandler.handle(new AlramResult(AlramType.BLACK_LIST, msg, plateNumber, HCSDK.getNameByid(pAlarmer.lUserID)));
+                            }else if (whiteCarResult.byListType == 2){
+                                msg = msg + "：检测到临时车辆，车牌：" + plateNumber;
+                                alarmCallbackHandler.handle(new AlramResult(AlramType.TEMP_LIST, msg, plateNumber, HCSDK.getNameByid(pAlarmer.lUserID)));
                             }
+
+                            break;
                         }
-                    } catch (UnsupportedEncodingException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
                     }
+                } catch (UnsupportedEncodingException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
 
                 break;
             default:
                 //其他报警
-                alarmCallbackHandler.handle(new AlramResult(AlramType.OTHER, msg,"",HCSDK.getNameBySSerialNumber(pAlarmer.sSerialNumber)));
+                alarmCallbackHandler.handle(new AlramResult(AlramType.OTHER, msg, "", HCSDK.getNameBySSerialNumber(pAlarmer.sSerialNumber)));
                 break;
         }
     }
