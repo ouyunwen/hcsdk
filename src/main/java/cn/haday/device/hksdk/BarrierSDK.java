@@ -32,7 +32,7 @@ public class BarrierSDK extends HCSDK {
      * @param startTime          准入开始时间
      * @param endTime            准入结束时间
      */
-    public static void addPass(String deviceName, String licensePlateNumber, LocalDateTime startTime, LocalDateTime endTime) throws InstructionExecuteException {
+    public static void addToWhiteNameList(String deviceName, String licensePlateNumber, LocalDateTime startTime, LocalDateTime endTime) throws InstructionExecuteException {
         int lHandle = openConnection(deviceName);
         System.out.println("--------lHandle:"+lHandle);
         HCNetSDK.NET_DVR_VEHICLE_CONTROL_LIST_INFO struVehicleControl = new HCNetSDK.NET_DVR_VEHICLE_CONTROL_LIST_INFO();
@@ -88,7 +88,7 @@ public class BarrierSDK extends HCSDK {
      * @param deviceName         设备别名
      * @param licensePlateNumber 车牌号码
      */
-    public static void deletePass(String deviceName, String licensePlateNumber) throws InstructionExecuteException {
+    public static void deleteFromWhiteNameList(String deviceName, String licensePlateNumber) throws InstructionExecuteException {
         Integer id = getIdByName(deviceName);
         System.out.println("--------lHandle:"+id);
         if (null == id) {

@@ -37,7 +37,7 @@ public class HCSDK {
     protected static HCNetSDK hcNetSDK = HCNetSDK.INSTANCE;
 
     //监听回调函数
-    private static volatile AlramCallBack alramCallBack;
+    private static volatile AlarmCallBack alarmCallBack;
 
     //监听端口
     private static final int port = 8000;
@@ -210,11 +210,11 @@ public class HCSDK {
     public static void startAlarmListen(AlarmCallbackHandler alarmCallbackHandler) throws InstructionExecuteException {
         Pointer pUser = null;
 
-        if (alramCallBack == null) {
-            alramCallBack = new AlramCallBack(alarmCallbackHandler);
+        if (alarmCallBack == null) {
+            alarmCallBack = new AlarmCallBack(alarmCallbackHandler);
         }
         try {
-            lListenHandle = hcNetSDK.NET_DVR_StartListen_V30(InetAddress.getLocalHost().getHostAddress(), (short) port, alramCallBack, pUser);
+            lListenHandle = hcNetSDK.NET_DVR_StartListen_V30(InetAddress.getLocalHost().getHostAddress(), (short) port, alarmCallBack, pUser);
         } catch (UnknownHostException e) {
             throw new InstructionExecuteException("开启监听失败，获取本地IP出现异常：" + e.getMessage(), 1);
         }
@@ -242,7 +242,7 @@ public class HCSDK {
         if (deviceName == null) {
             throw new InstructionExecuteException("开启布防失败，设备别名不能为空", 1);
         }
-        if (alramCallBack == null) {
+        if (alarmCallBack == null) {
             throw new InstructionExecuteException("布防失败，布防全局回调函数没有设置", 1);
         }
         //尚未布防,需要布防
@@ -290,10 +290,10 @@ public class HCSDK {
      */
     public static boolean setAlramCallBack(AlarmCallbackHandler alarmCallbackHandler) throws InstructionExecuteException {
         synchronized (lock) {
-            if (alramCallBack == null) {
-                alramCallBack = new AlramCallBack(alarmCallbackHandler);
+            if (alarmCallBack == null) {
+                alarmCallBack = new AlarmCallBack(alarmCallbackHandler);
                 Pointer pUser = null;
-                if (!hcNetSDK.NET_DVR_SetDVRMessageCallBack_V30(alramCallBack, pUser)) {
+                if (!hcNetSDK.NET_DVR_SetDVRMessageCallBack_V30(alarmCallBack, pUser)) {
                     throw new InstructionExecuteException("布防时设置回调函数失败，异常代号：" + hcNetSDK.NET_DVR_GetLastError(), 1);
                 }
                 return true;

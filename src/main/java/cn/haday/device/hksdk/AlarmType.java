@@ -1,6 +1,6 @@
 package cn.haday.device.hksdk;
 
-public enum  AlramType {
+public enum AlarmType {
     OTHER("其他报警"),
     ANY_CAR("交通抓拍结果（所有车辆）"),
     NEW_ANY_CAT("新版交通抓拍结果（所有车辆）"),
@@ -11,7 +11,7 @@ public enum  AlramType {
 
     private String comment;
 
-    AlramType(String comment) {
+    AlarmType(String comment) {
         this.comment = comment;
     }
 

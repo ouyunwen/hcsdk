@@ -2,8 +2,8 @@ package cn.haday.device.hksdk;
 
 import java.util.Date;
 
-public class AlramResult {
-    private AlramType alramType;
+public class AlarmResult {
+    private AlarmType alarmType;
     private String msg;
     private String licensePlateNumber;
     private Date date;
@@ -11,41 +11,41 @@ public class AlramResult {
     private int deviceId;
     private String deviceName;
 
-    public AlramResult(AlramType alramType, String msg) {
-        this.alramType = alramType;
+    public AlarmResult(AlarmType alarmType, String msg) {
+        this.alarmType = alarmType;
         this.msg = msg;
         this.date = new Date();
     }
 
-    public AlramResult(AlramType alramType, String msg, String licensePlateNumber) {
-        this.alramType = alramType;
+    public AlarmResult(AlarmType alarmType, String msg, String licensePlateNumber) {
+        this.alarmType = alarmType;
         this.msg = msg;
         this.licensePlateNumber = licensePlateNumber;
         this.date = new Date();
     }
 
-    public AlramResult(AlramType alramType, String msg, String licensePlateNumber, int deviceId) {
-        this.alramType = alramType;
+    public AlarmResult(AlarmType alarmType, String msg, String licensePlateNumber, int deviceId) {
+        this.alarmType = alarmType;
         this.msg = msg;
         this.licensePlateNumber = licensePlateNumber;
         this.deviceId = deviceId;
         this.date = new Date();
     }
 
-    public AlramResult(AlramType alramType, String msg, String licensePlateNumber, String deviceName) {
-        this.alramType = alramType;
+    public AlarmResult(AlarmType alarmType, String msg, String licensePlateNumber, String deviceName) {
+        this.alarmType = alarmType;
         this.msg = msg;
         this.licensePlateNumber = licensePlateNumber;
         this.deviceName = deviceName;
         this.date = new Date();
     }
 
-    public AlramType getAlramType() {
-        return alramType;
+    public AlarmType getAlarmType() {
+        return alarmType;
     }
 
-    public void setAlramType(AlramType alramType) {
-        this.alramType = alramType;
+    public void setAlarmType(AlarmType alarmType) {
+        this.alarmType = alarmType;
     }
 
     public String getMsg() {
